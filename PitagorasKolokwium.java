@@ -1,93 +1,148 @@
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.geom.Line2D;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class PitagorasKolokwium  extends JFrame implements ActionListener{
+public class KolokwiumPitagoras extends JFrame implements ActionListener {
 	
-	JTextField pole_a;
-	JTextField pole_b;
-	JTextField pole_c;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	JTextField wartosc_a = new JTextField("Podaj wartoÅ›Ä‡ przyprostokÄ…tnej (a)");
+	JTextField wartosc_b = new JTextField("Podaj wartoÅ›Ä‡ przyprostokÄ…tnej (b)");
+	JTextField wartosc_c = new JTextField("Podaj wartoÅ›Ä‡ przeciwprostokÄ…tnej (c)");
+	JButton oblicz = new JButton("Oblicz!");
 	
-	JButton wylicz;
+	public double Liczba_a;
+	public double Liczba_b;
+	public double Liczba_c;
+	
+	public JPanel mojPanel = new JPanel();
+	public JPanel paneldoRys = new JPanel();
+	
+	public double getLiczba_a() {
+		return Liczba_a;
+	}
+
+	public double getLiczbaB() {
+		return Liczba_b;
+	}
+
+	public double getLiczbaC() {
+		return Liczba_c;
+	}
 
 	public static void main(String[] args) {
-		PitagorasKolokwium frame = new PitagorasKolokwium();
+		KolokwiumPitagoras frame = new KolokwiumPitagoras();
 		frame.initUI();
+	}
 
-	}
-	
-	public void initUI() {
+	private void initUI() {
+		this.setLayout(new BorderLayout());
 		
-	pole_a = new JTextField();
-	pole_b = new JTextField();	
-	pole_c = new JTextField();
+		mojPanel.add(wartosc_a);
+		wartosc_a.setColumns(20);
+		mojPanel.add(wartosc_b);
+		wartosc_a.setColumns(20);
+		mojPanel.add(wartosc_c);
+		wartosc_a.setColumns(20);
+		mojPanel.add(oblicz);
+		oblicz.addActionListener(this);
+		
+		this.add(mojPanel, BorderLayout.NORTH);
 	
-	wylicz = new JButton("Wylicz!");
-	wylicz.addActionListener(this);
-	
-	this.add(pole_a);
-	this.add(pole_b);
-	this.add(pole_c);
-	this.add(wylicz);
-	
-	this.setLayout(new GridLayout(4, 1));
-	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	this.setLocationRelativeTo(null);
-	this.setSize(500, 500);
-	this.setVisible(true);
-	
-	
+		this.add(paneldoRys, BorderLayout.CENTER);
+		
+		
+		this.setLayout(new GridLayout(4, 1));
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		this.setSize(800, 600);
+		this.setVisible(true);
+		this.setTitle("Pitagoras");
+		
+		
 	}
-	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(wylicz.equals(e.getSource())) {
-			wylicz();
+		if(oblicz.equals(e.getSource())) {
+			obliczanie();
 		}
 		
 	}
 
+	private void obliczanie() {
+		try {
+			
+		boolean puste_a = wartosc_a.getText().isBlank();
+		boolean puste_b = wartosc_b.getText().isBlank();
+		boolean puste_c = wartosc_c.getText().isBlank();
+		
+		if((puste_a && puste_b && puste_c) || (puste_a && puste_b) || (puste_b && puste_c) || (puste_a && puste_c)) {
+			JOptionPane.showMessageDialog(null, "Wprowadz brakujÄ…ce dane!", "ALERT", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		else if (!puste_a && !puste_b && !puste_c) {
+			JOptionPane.showMessageDialog(null, "Zostaw jedno pole puste!", "ALERT", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		else if(puste_a && (!puste_b && !puste_c)) {
+			 Liczba_b = Double.parseDouble(wartosc_b.getText());
+			 Liczba_c = Double.parseDouble(wartosc_c.getText());
+			 
+			 Liczba_a = Math.sqrt(Math.pow(Liczba_c, 2) - Math.pow(Liczba_a, 2));
+			 wartosc_a.setText(String.valueOf(Liczba_a));
+		}
+		
+		else if(puste_b && (!puste_a && !puste_c)) {
+			 Liczba_a = Double.parseDouble(wartosc_a.getText());
+			 Liczba_c = Double.parseDouble(wartosc_c.getText());
+			 
+			 Liczba_b = Math.sqrt(Math.pow(Liczba_c, 2) - Math.pow(Liczba_a, 2));
+			 wartosc_b.setText(String.valueOf(Liczba_b));
+		}
+		
+		else if (puste_c && (!puste_a && !puste_b)) {
+			Liczba_a = Double.parseDouble(wartosc_a.getText());
+			Liczba_b = Double.parseDouble(wartosc_b.getText());
+			
+			Liczba_c = Math.sqrt(Math.pow(Liczba_a, 2) + Math.pow(Liczba_b, 2));
+			wartosc_c.setText(String.valueOf(Liczba_c));
+			
+		}
+	}	catch (Exception e1) {
+		System.out.println("Podaj poprawne liczby.");
+		
+	}
+		
+		repaint();
+		
+	}
 
-	private void wylicz() {	  // Tu coœ chyba nie dzia³a, jak znajdziesz co to jesteœ kotem !
+	public void paint(Graphics g) {
 		
-		pole_a.setText("Podaj dwie d³ugoœci: ");
-		pole_b.setText("Podaj dwie d³ugoœci: ");
-		pole_c.setText("Podaj dwie d³ugoœci: ");
+		super.paint(g);
 		
-		String przyprostokatna1 = pole_a.getText();
-		double przyprostokatnaLiczba1 = Double.parseDouble(przyprostokatna1);
+		Graphics2D g2 = (Graphics2D) g;
 		
-		String przyprostokatna2 = pole_b.getText();
-		double przyprostokatnaLiczba2 = Double.parseDouble(przyprostokatna2);
+		g2.setStroke(new BasicStroke(1));
+		g2.setColor(Color.BLACK);
 		
-		String przeciwprostokatna = pole_c.getText();
-		double przeciwprostokatnaLiczba = Double.parseDouble(przeciwprostokatna);
-		
-		if(pole_a.getText().isBlank()) {
-			
-			double wynik = Math.sqrt(Math.pow(przeciwprostokatnaLiczba, 2) - Math.pow(przyprostokatnaLiczba2, 2));
-			pole_a.setText(String.valueOf(wynik));
-			
-		}
-		
-		else if(pole_b.getText().isBlank()) {
-			
-			double wynik = Math.sqrt(Math.pow(przeciwprostokatnaLiczba, 2) - Math.pow(przyprostokatnaLiczba1, 2));
-			pole_a.setText(String.valueOf(wynik));
-		
-		}
-		
-		else if (pole_c.getText().isBlank()) {
-			
-			double wynik = Math.sqrt(Math.pow(przyprostokatnaLiczba1, 2) + Math.pow(przyprostokatnaLiczba2, 2));
-			pole_c.setText(String.valueOf(wynik));
-			
-		}
+		g2.draw(new Line2D.Double(400, 400, 400 - Liczba_a*20, 400)); //przyprostokatna
+		g2.draw(new Line2D.Double(400, 400, 400, 400 - Liczba_b*20)); //przyprostokatna
+		g2.draw(new Line2D.Double(400- Liczba_a*20, 400, 400 , 400 - Liczba_b*20)); //przeciwprostokatna
 	}
 
 }
